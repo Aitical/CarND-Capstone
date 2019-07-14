@@ -9,16 +9,6 @@ This is the Capstone project for the Udacity Self-Driving Car Nanodegree. We dev
 * **** [github](), [email]()
 * **Wu Gang** [github](https://github.com/fadida), [email](w965813422@gmail.com)
 
-### Rubric Points:
-
-* Smoothly follows waypoints in the simulator.
-* Respects the target top speed set for the waypoints' twist.twist.linear.x in waypoint_loader.py. Works by testing with different values for kph velocity parameter in /ros/src/waypoint_loader/launch/waypoint_loader.launch. Vehicle adheres to the kph target top speed set here.
-* Stops at traffic lights when needed.
-* Stops and restarts PID controllers depending on the state of /vehicle/dbw_enabled.
-* Publishes throttle, steering, and brake commands at 50hz.
-* Launches correctly using the launch files provided in the capstone repo. 
-
-
 ### Project Components
 
 #### Traffic Light Detector and Classifier
@@ -31,6 +21,7 @@ We use the segmentation method to get detect the traffic light. We used [UNet](h
 
 To classify the type of the traffic light, we used the knowledge learned in the last term and built a simple but efficiency CNN model with FC Layer to classify the traffic lights. Details of the model showing in the following table:
 ![pic referenced from Udacity](https://raw.githubusercontent.com/Aitical/CarND-Capstone/master/imgs/cls.png)
+
 **For more detail about the detector can be found in [detector](https://github.com/Aitical/CarND-Capstone/tree/master/detector)**
 
 ##### Waypoint updater
