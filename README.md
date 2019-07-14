@@ -1,7 +1,5 @@
 # CarND-Capstone
 [![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013)
-*Software to guide a real self-driving car around a test track* 
-[![Visual Car On the Track Video](youtube-car-go.png)](https://youtu.be/ol_FAZobGF0)
 ### System Architecture  
 This is the Capstone project for the Udacity Self-Driving Car Nanodegree. We developed software to guide a real self-driving car around a test track. Using the Robot Operating System (ROS), we created nodes for traffic light detection and classification, trajectory planning, and control.
 ![pic referenced from Udacity](imgs/arc.png)
@@ -20,31 +18,20 @@ This is the Capstone project for the Udacity Self-Driving Car Nanodegree. We dev
 * Publishes throttle, steering, and brake commands at 50hz.
 * Launches correctly using the launch files provided in the capstone repo. 
 
-### What we have implemented? 
-
-* **Traffic Light Detector and Classifier** 
-* **Trajectory Planner**
-* **Waypoint Follower**
-* **Stability Controller**
-* **Gain Controller**
 
 ### Project Components
 
 #### Traffic Light Detector and Classifier
-![image1](car-go-second-green.png)
-Car receives image from the camera, system can detect and classify a traffic light color, if the traffic light is not detected the None is returned. We built two models. First part is to detect a traffic light and the second part is to classify.
+Car receives image from the camera, system can detect and classify a traffic light color, if the traffic light is not detected the None is returned. We built two models. First part is to detect a traffic light  using the UNet and the second part is to classify using our own network.
 
 ##### Traffic light Detection
-We use the segmentation method to get detect the traffic light. I’ve used [UNet](https://arxiv.org/pdf/1505.04597.pdf) to segment and used the keras to build model.For the traffic light detection I've used a previously trained model and weights.
+We use the segmentation method to get detect the traffic light. We used [UNet](https://arxiv.org/pdf/1505.04597.pdf) to segment and used the keras to build model. During building the model, we learned a lot from this [repo](https://github.com/zhixuhao/unet) which provided a useful model code and we used a previously trained model and weights then fine tuning on our own labled data and [Bosch](https://hci.iwr.uni-heidelberg.de/node/6132) dataset.
 
 ##### Traffic light Classifier
 
-The project is aimed at classifying traffic light on the incoming picture either from Simulator or from Carla. Code for classifier is located [here](https://github.com/ooleksyuk/CarND-Traffic-Light-Detector-Classifier/tree/master/tl_classifier).
-Four output classes: Red, Yellow, Green, None.
-Test accuracy was 99.8% for Simulator images and 85.4% for Carla images.
-See inference code in [tl_classifier.py](https://github.com/ooleksyuk/CarND-Capstone/blob/master/ros/src/tl_detector/light_classification/tl_classifier.py).
-I've used two different models for Simulator and for Carla.
-Simulator model summary
+To classify the type of the traffic light, we used the knowledge learned in the last term and built a simple but efficiency CNN model with FC Layer to classify the traffic lights. Details of the model showing in the following table:
+![pic referenced from Udacity](https://raw.githubusercontent.com/Aitical/CarND-Capstone/master/imgs/cls.png)
+**For more detail about the detector can be found in [detector](https://github.com/Aitical/CarND-Capstone/tree/master/detector)**
 
 ##### Waypoint updater
  - Waypoint updater performs the following at each current pose update
