@@ -5,15 +5,15 @@ This is the Capstone project for the Udacity Self-Driving Car Nanodegree. We dev
 ![pic referenced from Udacity](imgs/arc.png)
 ### Team Members: 
 
-* **** [github](), [emai]() - team leader
-* **** [github](), [email]()
-* **Wu Gang** [github](https://github.com/fadida), [email](w965813422@gmail.com)
+* **Wang Meng** [github](https://github.com/Felix-yuan2018), [emai](yfinn@163.com) - team leader
+* **Darmon** [github](https://github.com/damengsir), [email](xiaowangyx1@163.com)
+* **Wu Gang** [github](https://github.com/Aitical), [email](w965813422@gmail.com)
 
 ### Project Components
 
 #### Traffic Light Detector and Classifier
 Car receives image from the camera, system can detect and classify a traffic light color, if the traffic light is not detected the None is returned. We built two models. First part is to detect a traffic light  using the UNet and the second part is to classify using our own network.
-
+**This part is mainly implemented by me**
 ##### Traffic light Detection
 We use the segmentation method to get detect the traffic light. We used [UNet](https://arxiv.org/pdf/1505.04597.pdf) to segment and used the keras to build model. During building the model, we learned a lot from this [repo](https://github.com/zhixuhao/unet) which provided a useful model code and we used a previously trained model and weights then fine tuning on our own labled data and [Bosch](https://hci.iwr.uni-heidelberg.de/node/6132) dataset.
 
@@ -29,30 +29,30 @@ To classify the type of the traffic light, we used the knowledge learned in the 
  - Find closest waypoint
    - This is done by first searching for the waypoint with closest 2D Euclidean distance to the current pose among the waypoint list
    - Once the closest waypoint is found it is transformed to vehicle coordinate system in order to determine whether it is ahead of the vehicle and advance one waypoint if found to be behind
-   - Searching for the closest waypoint is done by constructing a k-d tree of waypoints at the start with x and y coordinates as dimensions used to partition the point space. This makes the search O(log n) in time complexity. In practice we reduced the search time on average from 8.6ms to 0.14ms.
+   - Searching for the closest waypoint is done by constructing a k-d tree of waypoints at the start with x and y coordinates as dimensions used to partition the point space. 
  - Calculate trajectory
-   - The target speed at the next waypoint is calculated as the expected speed (v) at the next waypoint so that the vehicle reaches 0 speed after traversing the distance (s) from the next waypoint to the traffic light stop line and the largest deceleration (a)
+   - The target speed at the next waypoint is calculated as the expected speed (v) at the next waypoint so that the vehicle reaches 0 speed after traversings the distance (s) from the next waypoint to the traffic light stop line and the largest deceleration (a)
    - Using linear motion equations it can be shown that v = sqrt(2 x a x s)
    - If there is no traffic light stopline, then target speed is set to the maximum
  - Construct final waypoints
    - Published final waypoints are constructed by extracting the number of look ahead waypoints starting at the calculated next waypoint
    - The speeds at published waypoints are set to the lower of target speed and maximum speed of the particular waypoint
 
-##### DBW
- - Throttle and brake is controlled via PID controller
- - PID controller inputs
-   - reference - linear x velocity of the twist command from waypoint follower
-   - measurement - linear x velocity of the current velocity
- - PID control output, when positive, is converted to throttle by clipping it between 0.0 and 1.0
- - PID control output, when negative, is converted to brake by first normalizing it and then using it to modulate the max braking torque
-   - The normalizer is approximated by (|Kp|+|Kd|+|Ki|) x |max input|, where Kx are PID gains and max input is the speed limit
-   - Maximum braking torque is calculated as (total vehicle mass) x (deceleration limit) x (wheel radius)
+#### DBW
 
- - Required steering angle is calculated using the linear x velocity and angular z velocity of the twist command from waypoint follower and current linear x velocity using the provided yaw controller
-   - steering angle = arctan(wheel base / turning radius) x steer ratio
-   - turning radius = current linear velocity / target angular velocity
-   - target angular velocity  = current angular velocity x (current linear velocity / target linear velocity)
- - Steering command is filtered with a low pass filter to avoid fast steering changes
+The DBW node is the final step in the self driving vehicle’s system. At this point we have a target linear and angular velocity and must adjust the vehicle’s controls accordingly. In this project we control 3 things: throttle, steering, brakes. As such, we have 3 distinct controllers to interface with the vehicle.
+
+##### Throttle Controller
+
+The throttle controller is a simple PID controller that compares the current velocity with the target velocity and adjusts the throttle accordingly. The throttle gains were tuned using trial and error for allowing reasonable acceleration without oscillation around the set-point.
+
+##### Steering Controller
+
+This controller translates the proposed linear and angular velocities into a steering angle based on the vehicle’s steering ratio and wheelbase length. To ensure our vehicle drives smoothly, we cap the maximum linear and angular acceleration rates. The steering angle computed by the controller is also passed through a low pass filter to reduce possible jitter from noise in velocity data.
+
+##### Braking Controller
+
+This is the simplest controller of the three - we simply proportionally brake based on the difference in the vehicle’s current velocity and the proposed velocity. This proportional gain was tuned using trial and error to ensure reasonable stopping distances while at the same time allowing low-speed driving. Despite the simplicity, we found that it works very well.
 
 
 ###### This is the project repo for the final project of the Udacity Self-Driving Car Nanodegree: Programming a Real Self-Driving Car. For more information about the project, see the project introduction [here](https://classroom.udacity.com/nanodegrees/nd013/parts/6047fe34-d93c-4f50-8336-b70ef10cb4b2/modules/e1a23b06-329a-4684-a717-ad476f0d8dff/lessons/462c933d-9f24-42d3-8bdc-a08a5fc866e4/concepts/5ab4b122-83e6-436d-850f-9f4d26627fd9).
